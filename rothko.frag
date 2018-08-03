@@ -1,5 +1,5 @@
-// Author:
-// Title:
+// Author: juan
+// Title: rothko
 
 #ifdef GL_ES
 precision mediump float;
@@ -45,7 +45,7 @@ float noise (in vec2 st) {
 void main() {
     vec2 st = gl_FragCoord.xy/u_resolution.xy;
     st.x *= u_resolution.x/u_resolution.y;
-	st.x *= 3.;
+    st.x *= 3.;
     
     vec3 color = vec3(0.);
 
@@ -59,6 +59,8 @@ void main() {
 
     float moveNoise = 10.6*noise(vec2(u_time*0.1, i.x * 0.05 * u_time));
 
+    vec3 foreground = vec3(1.0);
+    
     if (i.x == 1.) {
         
         lb  = smoothstep(0.02*noise(vec2(f.x*30.0, f.y*60.0)) * moveNoise, 0.1*noise(vec2(f.x*30.0, f.y*60.0)) * moveNoise, f);
@@ -74,20 +76,16 @@ void main() {
         lb  = smoothstep(0.02*noise(vec2(f.x*10.0, f.y*80.0)), 0.1*noise(vec2(f.x*10.0, f.y*80.0)), f);
         tr  = smoothstep(0.02*noise(vec2(f.x*5.0, f.y*40.0)) * moveNoise, 0.1*noise(vec2(f.x*5.0, f.y*40.0)) * moveNoise, 1.0 - f);        
     }
-
-	
+    
     vec3 rect =  vec3(lb.x * lb.y * tr.x * tr.y);
+    
+    vec3 background = vec3(0.7, 0.0, 0.0) - 0.2*noise(st*5.) - 0.02*noise(st*10.) - 0.03*noise(st*25.) - 0.03*noise(st*35.) - 0.1*smoothstep(0.3, 0.7, noise(st*10.)) ;
+    
+    rect = mix(foreground, background, 1.0-rect);
     
     color = rect;
     
-    float n = noise(vec2(st)*9.);
     
-    
-    if(i.x == 1.0) {
-		// color *= vec3(0.6, 0.0, 0.0);  
-    }
-
-    // color += n;
 
     gl_FragColor = vec4(color, 1.0);
 }
